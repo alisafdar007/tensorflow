@@ -20,6 +20,7 @@ limitations under the License.
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
@@ -28,10 +29,14 @@ limitations under the License.
 #include "nanobind/stl/string_view.h"  // IWYU pragma: keep
 #include "nanobind/stl/tuple.h"  // IWYU pragma: keep
 #include "nanobind/stl/unique_ptr.h"  // IWYU pragma: keep
+#include "nanobind/stl/vector.h"  // IWYU pragma: keep
+#include "xla/backends/cpu/testlib/elemental_kernel_emitter.h"
 #include "xla/backends/cpu/testlib/kernel_runner.h"
 #include "xla/backends/cpu/testlib/llvm_ir_kernel_emitter.h"
 #include "xla/backends/cpu/testlib/llvm_ir_kernel_spec.h"
 #include "xla/codegen/kernel_spec.h"
+#include "xla/hlo/ir/hlo_opcode.h"
+#include "xla/shape.h"
 #include "xla/stream_executor/launch_dim.h"
 
 namespace xla::cpu {
@@ -78,6 +83,10 @@ NB_MODULE(kernel_runner_extention, kernel_runner_module) {
                           std::get<2>(thread_dim)},
             {});
       });
+
+  nb::class_<ElementalKernelEmitter, KernelEmitter>(kernel_runner_module,
+                                                    "ElementalKernelEmitter")
+      .def(nb::init<std::vector<Shape>, const Shape&, HloOpcode>());
 
   nb::class_<KernelRunner, xla::KernelRunner>(kernel_runner_module,
                                               "KernelRunner")
